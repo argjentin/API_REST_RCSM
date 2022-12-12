@@ -1,0 +1,72 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        link(rel="stylesheet", href="/css/style.css")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Document
+    body 
+        header 
+            h3 Nobel Prize Laureates
+            nav
+                a(href="/category") Laureates by category
+                a(href="/laureate") Add a laureate      
+        //- form to add a new laureate
+        div(class="container")
+            form(action="/laureates/add", method="POST")
+                select
+                    option Select a category
+                label(for="firstname") Firstname
+                input(type="text", name="firstname", id="firstname")
+                label(for="surname") Surname
+                input(type="text", name="surname", id="surname")
+                label(for="motivation") Motivation
+                input(type="text", name="motivation", id="motivation")
+                label(for="year") Year
+                input(type="text", name="year", id="year")
+                button(type="submit") Add
+
+    script.
+        const ul = document.querySelector('select')
+        const url = 'http://localhost:3000/prizes/categories';
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const category = Object.values(data)
+                category.forEach(category => {
+                    for (let i = 0; i < category.length; i++) {
+                        const option = document.createElement('option')
+                        option.value = category[i]
+                        option.textContent = category[i]
+                        ul.appendChild(option)
+                    }
+                })
+            })
+        const form = document.querySelector('form')
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+            const firstname = document.querySelector('#firstname').value
+            const surname = document.querySelector('#surname').value
+            const motivation = document.querySelector('#motivation').value
+            const year = document.querySelector('#year').value
+            const category = document.querySelector('select').value
+            const url = 'http://localhost:3003/laureates/add'
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstname,
+                    surname,
+                    motivation,
+                    year,
+                    category
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                })
+        })
